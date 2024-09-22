@@ -20,6 +20,9 @@ package org.apache.maven.plugin.surefire;
  */
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -686,6 +689,24 @@ public class SurefirePlugin
     @Override
     public String getTest()
     {
+        File f = new File( test );
+        if ( f.exists() && !f.isDirectory ( ) )
+        {
+            try
+            {
+                List<String> l = Files.readAllLines( f.toPath(), Charset.defaultCharset( ) );
+                StringBuilder sb = new StringBuilder( );
+                for ( String s : l )
+                {
+                    sb.append( s + "," );
+                }
+                String s = sb.toString( );
+                return s.substring( 0 , s.length( ) - 1 );
+            }
+            catch ( IOException e )
+            {
+            }
+        }
         return test;
     }
 
